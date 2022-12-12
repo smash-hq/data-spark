@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: data-spark-job
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  main:
+    allow-bean-definition-overriding: true
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+server:
+  port: 0
+logging:
+  config: classpath:log4j.xml

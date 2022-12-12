@@ -1,0 +1,64 @@
+kind: pipeline
+name: 应用发布
+platform:
+  os: linux
+  arch: amd64
+steps:
+  - name: 代码编译
+    image: gradle:jdk8
+    volumes:
+      - name: cache
+        path: /home/gradle/.gradle
+    commands:
+      #      - rm -rf /home/gradle/.gradle
+      - gradle shadowJar -x test
+    when:
+      event: [ promote ]
+  - name: 构建镜像
+    image: plugins/docker
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      registry:
+        from_secret: docker_registry
+      repo: registry.cn-hangzhou.aliyuncs.com/registry-wkjp/${DRONE_REPO_NAME}
+      tags: amd64_${DRONE_COMMIT}
+    when:
+      event: [ promote ]
+  - name: 应用发布
+    image: chenfengwei/alpine:3.10
+    environment:
+      rancher_address:
+        from_secret: rancher_address
+      rancher_project:
+        from_secret: rancher_project
+      rancher_namespace:
+        from_secret: rancher_namespace
+      rancher_sk:
+        from_secret: rancher_sk
+      docker_repo:
+        from_secret: docker_repo
+    commands:
+      - rm -rf temp.json
+      - curl -k -u $rancher_sk -X GET -H 'Accept:%20application/json' -H 'Content-Type:%20application/json' https://$rancher_address/v3/project/$rancher_project/workloads/deployment:$rancher_namespace:${DRONE_REPO_NAME} >> temp.json
+      - current_image="$docker_repo/${DRONE_REPO_NAME}:amd64_${DRONE_COMMIT}"
+      - containers_v=$(jq '(.containers[] | .image) |= "'$current_image'"' temp.json|jq '.containers')
+      - qingqiubody={'"containers"':$containers_v}
+      - curl -k -u $rancher_sk -X PUT -H 'Accept:%20application/json' -H 'Content-Type:%20application/json' -d ''"$qingqiubody"'' https://$rancher_address/v3/project/$rancher_project/workloads/deployment:$rancher_namespace:${DRONE_REPO_NAME}
+    when:
+      event: [ promote ]
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/${DRONE_REPO_NAME}/.gradle
+  - name: docker
+    host:
+      path: /var/run/docker.sock
+trigger:
+  branch:
+    - $from_secret: trigger_branch

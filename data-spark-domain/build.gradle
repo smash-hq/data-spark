@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':data-spark-facade')
+    compile 'org.codehaus.janino:janino:3.0.9'
+}

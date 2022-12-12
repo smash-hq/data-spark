@@ -1,0 +1,111 @@
+wrapper {
+    gradleVersion = '6.4.1'
+}
+buildscript {
+    //定义全局变量
+    ext {
+        springBootVersion = '2.3.1.RELEASE'
+        vcolcoParentVersion = '1.0-20210621.100739-16'
+        shadowVersion = '6.1.0'
+    }
+    repositories {
+        mavenLocal()
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("com.github.jengelman.gradle.plugins:shadow:${shadowVersion}")
+    }
+}
+
+/**
+ * 引入所有模块的配置
+ */
+allprojects {
+    group = 'com.wk.zhongtai'
+    version = '1.0.0-SNAPSHOT'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    // 指定shadow插件
+    apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+    jar.enabled = true
+    bootJar.enabled = true
+    shadowJar.enabled = false
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    repositories {
+        maven { url "http://182.148.114.194:58081/repository/maven-snapshots/" }
+        mavenLocal()
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+    }
+    configurations {
+        compile.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        compile.exclude group: 'org.apache.poi', module: 'poi-ooxml'
+        compile.exclude group: 'org.apache.poi', module: 'poi'
+        compile.exclude group: 'org.apache.poi', module: 'poi-ooxml-schemas'
+//        compile.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+
+    dependencies {
+        //vcolco-parent依赖，若项目特殊原因不采用统一依赖管理，可删除
+        implementation platform("org.vcolco:vcolco-parent:${vcolcoParentVersion}")
+        compile('org.springframework.boot:spring-boot-starter-log4j2')
+        compile('org.springframework.boot:spring-boot-starter') {
+            exclude module: 'spring-boot-starter-logging'
+        }
+        compile('org.springframework.boot:spring-boot-starter-web') {
+            exclude module: 'spring-boot-starter-logging'
+        }
+
+        compile('org.projectlombok:lombok')
+        annotationProcessor('org.projectlombok:lombok')
+        compile 'org.codehaus.janino:janino:3.0.9'
+        compile 'com.alibaba:fastjson:1.2.83'
+        compile 'org.apache.commons:commons-lang3'
+        // spring-nacos
+        compile 'org.springframework.cloud:spring-cloud-starter-alibaba-nacos-discovery:0.2.2.RELEASE'
+        // data-etl
+        compile("com.wk.data:data-etl-facade:0.0.1-20220927.061220-65")
+        compile("com.wk.data:data-share-facade:0.0.1-20220114.082435-2")
+        compile 'org.springframework.cloud:spring-cloud-starter-openfeign:2.0.0.RELEASE'
+    }
+
+
+    test {
+        useJUnitPlatform()
+    }
+    //指定编码格式
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+}
+//jar.enabled = false
+//
+//subprojects {
+//    //引入spring 依赖管理插件
+//    apply plugin: 'io.spring.dependency-management'
+//    //引入springboot 插件
+//    apply plugin: 'org.springframework.boot'
+//    // 指定shadow插件
+//    apply plugin: "com.github.johnrengelman.shadow"
+//    //指定编译编译.java文件的jdk版本
+//    sourceCompatibility = 1.8
+//    //确保class文件与targetCompatibility指定版本，或者更新的java虚拟机兼容
+//    targetCompatibility = 1.8
+//    //指定gradle编译时，针对java文件使用 UTF-8 编码
+//    jar.enabled = true
+//    bootJar.enabled = true
+//    shadowJar.enabled = false
+//    tasks.withType(JavaCompile) {
+//        options.encoding = 'UTF-8'
+//    }
+//}

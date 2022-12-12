@@ -1,0 +1,42 @@
+spring:
+  data:
+    mongodb:
+      dataetl:
+        authentication-database: admin
+        host: 192.168.70.135
+        port: 27017
+        username: rwuser
+        password: Testmongo#123
+        database: data-etl
+      detection:
+        authentication-database: admin
+        host: 192.168.70.135
+        port: 27017
+        username: rwuser
+        password: Testmongo#123
+        database: detection
+  kafka:
+    bootstrap-servers: 192.168.70.133:9092
+    producer:
+      retries: 3
+      retry-backoff-ms: 60000
+      linger-ms: 1
+      acks: 1
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+mysql:
+  url: jdbc:mysql://192.168.70.135:3306/%s/?useSSL=false&&characterEncoding=utf8&serverTimezone=GMT%2B8
+  username: root
+  password: test#123
+  driver: com.mysql.cj.jdbc.Driver
+mongodb:
+  data-etl: mongodb://rwuser:Testmongo#123@192.168.70.135:27017/data-etl?authSource=admin&authMechanism=SCRAM-SHA-256
+  data-lake: mongodb://rwuser:Testmongo#123@192.168.70.135:27017/datalake?authSource=admin&authMechanism=SCRAM-SHA-256
+  detection: mongodb://rwuser:Testmongo#123@192.168.70.135:27017/detection?authSource=admin&authMechanism=SCRAM-SHA-256
+spark:
+  master: local[*]
+  batch-size: 1000
+  num-executors:
+

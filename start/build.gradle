@@ -1,0 +1,42 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer
+
+shadowJar {
+    zip64 true
+    enabled = true
+    classifier = 'shadowJar'
+    baseName = 'app'
+    version = ""
+//    manifest {
+//        attributes 'Start-Class': 'com.wk.data.spark.Application'
+//    }
+    manifest {
+        attributes 'Start-Class': 'com.wk.data.start.Application'
+        attributes 'Main-Class': 'com.wk.data.start.Application'
+    }
+    // 排除一些不必要的文件
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    // Required for Spring
+    mergeServiceFiles()
+    append 'META-INF/spring.handlers'
+    append 'META-INF/spring.schemas'
+    append 'META-INF/spring.tooling'
+    transform(PropertiesFileTransformer) {
+        paths = ['META-INF/spring.factories']
+        mergeStrategy = "append"
+    }
+
+    // 重命名指定包路径
+    relocate 'org.yaml.snakeyaml', 'shadow.yaml.snakeyaml'
+    relocate 'javax.validation', 'shadow.javax.validation'
+    relocate 'com.google.gson', 'shadow.google.gson'
+    relocate 'com.google.common', 'shadow.com.google.common'
+    relocate 'com.fasterxml.jackson', 'shadow.fasterxml.jackson'
+    relocate 'org.eclipse.jetty', 'shadow.eclipse.jetty'
+
+}
+dependencies {
+    implementation project(':data-spark-service')
+    compile 'org.codehaus.janino:janino:3.0.9'
+}

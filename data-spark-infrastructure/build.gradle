@@ -1,0 +1,41 @@
+configurations {
+    compile.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    compile.exclude group: 'org.apache.poi', module: 'poi-ooxml'
+    compile.exclude group: 'org.apache.poi', module: 'poi'
+    compile.exclude group: 'org.apache.poi', module: 'poi-ooxml-schemas'
+    compile.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+}
+
+dependencies {
+    implementation project(':data-spark-domain')
+    implementation project(':data-spark-facade')
+
+    // mongodb
+//    compile('org.springframework.data:spring-data-mongodb:3.0.1.RELEASE') {
+//        exclude group: 'org.mongodb', module: "mongodb-driver-sync"
+//    }
+//
+
+    // mysql
+    compile('mysql:mysql-connector-java:8.0.12')
+
+    // spark
+    compile('org.apache.spark:spark-core_2.11:2.4.6') {
+        exclude group: 'org.slf4j', module: "slf4j-log4j12"
+        exclude module: 'guava'
+    }
+    compile('org.apache.spark:spark-sql_2.11:2.4.6') {
+        exclude group: 'org.slf4j', module: "slf4j-log4j12"
+    }
+    // ml
+    compile 'org.apache.spark:spark-mllib_2.11:2.4.6'
+
+    compile('org.mongodb.spark:mongo-spark-connector_2.11:2.4.3')
+
+    compile 'org.codehaus.janino:janino:3.0.9'
+
+    compile 'org.springframework.kafka:spring-kafka'
+//    compile 'org.apache.shardingsphere:shardingsphere-jdbc-core-spring:5.0.0-alpha'
+    compile 'com.zaxxer:HikariCP:3.4.5'
+
+}

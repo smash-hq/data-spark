@@ -1,0 +1,11 @@
+spring:
+  cloud:
+    nacos:
+      # 生产环境将以下三个key 配置在密文中
+      # 1. 服务器地址
+      server-addr: 10.50.125.143:8848
+      discovery:
+        server-addr: ${spring.cloud.nacos.server-addr}
+        ephemeral: true
+        register-enabled: false
+

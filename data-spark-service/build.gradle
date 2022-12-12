@@ -1,0 +1,17 @@
+configurations {
+    compile.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    compile.exclude group: 'org.apache.poi', module: 'poi-ooxml'
+    compile.exclude group: 'org.apache.poi', module: 'poi'
+    compile.exclude group: 'org.apache.poi', module: 'poi-ooxml-schemas'
+    compile.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+//    compile.exclude group: 'org.mongodb', module: 'mongodb-driver-core'
+//    compile.exclude group: 'org.mongodb', module: 'mongodb-driver-sync'
+//    compile.exclude group: 'org.mongodb', module: 'bson'
+
+}
+
+dependencies {
+    implementation project(':data-spark-domain')
+    implementation project(':data-spark-infrastructure')
+    implementation project(':data-spark-facade')
+}
